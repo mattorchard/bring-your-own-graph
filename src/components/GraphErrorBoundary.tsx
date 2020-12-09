@@ -17,7 +17,7 @@ export default class GraphErrorBoundary extends React.Component<
     if (this.state.error) {
       return (
         <div>
-          <h1>Graph Error</h1>;
+          <h1>Graph Error</h1>
           <p>The following error occurred while trying render your graph</p>
           <p>{this.state.error.message}</p>
           <button type="button" onClick={() => this.setState({ error: null })}>

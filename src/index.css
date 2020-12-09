@@ -16,6 +16,7 @@ body {
   --color-bg-light: #45243B;
   --color-text-light: snow;
   background-color: var(--color-bg);
+  color: var(--color-text-light)
 }
 
 * {
