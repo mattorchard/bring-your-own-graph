@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import BaseGraph from "./components/BaseGraph";
 import { paste } from "./helpers/clipboardHelpers";
 import GraphErrorBoundary from "./components/GraphErrorBoundary";
