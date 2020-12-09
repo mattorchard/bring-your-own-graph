@@ -11,33 +11,21 @@ const sampleGraph = {
   ]
 };
 
-const stringifyGraphLinks = (links: GraphLink[]) =>
-  links.map(({ source, target }) => [source, target]).join(",");
-
-const parseGraphLinks = (linksText: string) => {
-  const links: GraphLink[] = [];
-  linksText.split(",").forEach((linkText, index, textArray) => {
-    if (index % 2 !== 0) {
-      const prevLinkText = textArray[index - 1];
-      links.push({
-        source: prevLinkText,
-        target: linkText
-      });
-    }
-  });
-  return links;
-};
-
-const stringifyGraphNodes = (nodes: GraphNode[]) =>
-  nodes.map(node => node.id).join(",");
-
-const parseGraphNodes = (nodesText: string) =>
-  nodesText.split(",").map(id => ({ id }));
-
 const graphDataToSearchParams = (graphData: GD) => {
   const params = new URLSearchParams();
-  params.set("nodes", stringifyGraphNodes(graphData.nodes));
-  params.set("links", stringifyGraphLinks(graphData.links));
+  const nodeLookupTable = Object.fromEntries(
+    graphData.nodes.map((node, index) => [node.id, index])
+  );
+  params.set("nodes", graphData.nodes.map(node => node.id).join("~"));
+  params.set(
+    "links",
+    graphData.links
+      .flatMap(({ source, target }) => [
+        nodeLookupTable[source],
+        nodeLookupTable[target]
+      ])
+      .join("~")
+  );
   return params;
 };
 
@@ -45,11 +33,28 @@ const getInitialGraphData = () => {
   const searchParams = new URLSearchParams(window.location.search);
   const nodesRaw = searchParams.get("nodes");
   const linksRaw = searchParams.get("links");
+
   if (nodesRaw && linksRaw) {
-    return {
-      nodes: parseGraphNodes(nodesRaw),
-      links: parseGraphLinks(linksRaw)
-    };
+    try {
+      const nodes = nodesRaw.split("~").map(id => ({ id }));
+      const links: GraphLink[] = [];
+      linksRaw.split("~").forEach((linkText, index, textArray) => {
+        if (index % 2 !== 0) {
+          const prevLinkText = textArray[index - 1];
+          links.push({
+            source: nodes[parseInt(prevLinkText)].id,
+            target: nodes[parseInt(linkText)].id
+          });
+        }
+      });
+
+      return {
+        nodes,
+        links
+      };
+    } catch (error) {
+      console.error("Failed to parse graph from url", error);
+    }
   }
 
   return sampleGraph;
