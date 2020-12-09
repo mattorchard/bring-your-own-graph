@@ -2,22 +2,10 @@ import React from "react";
 import BaseGraph from "./components/BaseGraph";
 import { paste } from "./helpers/clipboardHelpers";
 import GraphErrorBoundary from "./components/GraphErrorBoundary";
-import useLocalStorageBackedState from "./hooks/useLocalStorageBackedState";
-
-const sampleGraph = {
-  nodes: [{ id: "A" }, { id: "B" }, { id: "C" }, { id: "D" }],
-  links: [
-    { source: "A", target: "B" },
-    { source: "A", target: "C" },
-    { source: "B", target: "D" }
-  ]
-};
+import useGraphData from "./hooks/useGraphData";
 
 const App = () => {
-  const [graphData, setGraphData] = useLocalStorageBackedState(
-    sampleGraph,
-    "graph-storage-v0"
-  );
+  const [graphData, setGraphData] = useGraphData();
   const pasteGraph = async () => {
     try {
       const rawData = await paste();
