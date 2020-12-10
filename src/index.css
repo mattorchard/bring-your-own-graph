@@ -27,10 +27,17 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  align-items: flex-start;
   position: absolute;
   z-index: 2;
   bottom: 1rem;
   right: 1rem;
+}
+.vertical-buttons {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 button {
@@ -52,4 +59,13 @@ button:hover {
 button:active {
   filter: brightness(.75);
   transform: translateY(.125rem)
+}
+.hover-details {
+  /*border-radius: .25rem;*/
+  /*background-color: var(--color-bg-light);*/
+  /*padding: .25rem;*/
+}
+.hover-details ul {
+  list-style: none;
+  padding-left: 1rem;
 }

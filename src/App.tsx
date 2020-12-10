@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import BaseGraph from "./components/BaseGraph";
 import { paste, copy } from "./helpers/clipboardHelpers";
 import GraphErrorBoundary from "./components/GraphErrorBoundary";
 import useGraphData from "./hooks/useGraphData";
 
+export type LinkDetails = { nodeId: string; from: string[]; to: string[] };
+
 const App = () => {
   const [graphData, setGraphData] = useGraphData();
+  const [
+    hoveredNodeDetails,
+    setHoveredNodeDetails
+  ] = useState<LinkDetails | null>(null);
   const copyLink = async () => {
     await copy(window.location.href);
   };
@@ -32,15 +38,43 @@ const App = () => {
   return (
     <div>
       <GraphErrorBoundary>
-        <BaseGraph data={graphData} />
+        <BaseGraph
+          data={graphData}
+          onLinkDetailsChange={setHoveredNodeDetails}
+        />
       </GraphErrorBoundary>
       <aside className="corner-form">
-        <button type="button" onClick={copyLink}>
-          Copy Link
-        </button>
-        <button type="button" onClick={pasteGraph}>
-          Paste Data
-        </button>
+        {hoveredNodeDetails && (
+          <section className="hover-details">
+            <strong>{hoveredNodeDetails.nodeId}</strong>
+            <dl>
+              <dt>From:</dt>
+              <dd>
+                <ul>
+                  {hoveredNodeDetails.from.map(nodeId => (
+                    <li key={nodeId}>{nodeId}</li>
+                  ))}
+                </ul>
+              </dd>
+              <dt>To:</dt>
+              <dd>
+                <ul>
+                  {hoveredNodeDetails.to.map(nodeId => (
+                    <li key={nodeId}>{nodeId}</li>
+                  ))}
+                </ul>
+              </dd>
+            </dl>
+          </section>
+        )}
+        <div className="vertical-buttons">
+          <button type="button" onClick={copyLink}>
+            Copy Link
+          </button>
+          <button type="button" onClick={pasteGraph}>
+            Paste Data
+          </button>
+        </div>
       </aside>
     </div>
   );
