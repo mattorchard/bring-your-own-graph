@@ -3,13 +3,40 @@ import { GraphData, GraphLink, GraphNode } from "react-d3-graph";
 type GD = GraphData<GraphNode, GraphLink>;
 
 const sampleGraph = {
-  nodes: [{ id: "A" }, { id: "B" }, { id: "C" }, { id: "D" }],
+  nodes: [
+    { id: "A" },
+    { id: "B", symbolType: "diamond" },
+    { id: "C" },
+    { id: "D" }
+  ],
   links: [
     { source: "A", target: "B" },
     { source: "A", target: "C" },
     { source: "B", target: "D" }
   ]
 };
+
+const symbolTypesLookup = {
+  circle: 0,
+  cross: 1,
+  diamond: 2,
+  square: 3,
+  star: 4,
+  triangle: 5,
+  wye: 6
+};
+
+const symbolTypes = [
+  "circle",
+  "cross",
+  "diamond",
+  "square",
+  "star",
+  "triangle",
+  "wye"
+];
+
+type SymbolType = keyof typeof symbolTypesLookup;
 
 const graphDataToSearchParams = (graphData: GD) => {
   const params = new URLSearchParams();
@@ -26,6 +53,16 @@ const graphDataToSearchParams = (graphData: GD) => {
       ])
       .join("~")
   );
+
+  params.set(
+    "symbol",
+    graphData.nodes
+      .map(node =>
+        node.symbolType ? symbolTypesLookup[node.symbolType as SymbolType] : 0
+      )
+      .join("")
+  );
+
   return params;
 };
 
@@ -33,10 +70,12 @@ const getInitialGraphData = () => {
   const searchParams = new URLSearchParams(window.location.search);
   const nodesRaw = searchParams.get("nodes");
   const linksRaw = searchParams.get("links");
+  const symbolRaw = searchParams.get("symbol");
 
   if (nodesRaw && linksRaw) {
     try {
-      const nodes = nodesRaw.split("~").map(id => ({ id }));
+      const nodes: GraphNode[] = nodesRaw.split("~").map(id => ({ id }));
+
       const links: GraphLink[] = [];
       linksRaw.split("~").forEach((linkText, index, textArray) => {
         if (index % 2 !== 0) {
@@ -47,6 +86,12 @@ const getInitialGraphData = () => {
           });
         }
       });
+
+      if (symbolRaw) {
+        symbolRaw.split("").forEach((char, index) => {
+          nodes[index].symbolType = symbolTypes[parseInt(char)];
+        });
+      }
 
       return {
         nodes,

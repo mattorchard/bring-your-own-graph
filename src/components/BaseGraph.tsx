@@ -29,7 +29,6 @@ const BaseGraph: React.FC<{
       id="base-graph-id"
       data={data}
       onMouseOverNode={nodeId => void onLinkDetailsChange(getDetails(nodeId))}
-      // onMouseOverNode={console.log}
       config={{
         width,
         height,
