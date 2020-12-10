@@ -51,7 +51,7 @@ const graphDataToSearchParams = (graphData: GD) => {
         nodeLookupTable[source],
         nodeLookupTable[target]
       ])
-      .join("~")
+      .join("-")
   );
 
   params.set(
@@ -77,7 +77,7 @@ const getInitialGraphData = () => {
       const nodes: GraphNode[] = nodesRaw.split("~").map(id => ({ id }));
 
       const links: GraphLink[] = [];
-      linksRaw.split("~").forEach((linkText, index, textArray) => {
+      linksRaw.split(/[~-]/).forEach((linkText, index, textArray) => {
         if (index % 2 !== 0) {
           const prevLinkText = textArray[index - 1];
           links.push({
