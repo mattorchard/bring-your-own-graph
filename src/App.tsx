@@ -1,11 +1,14 @@
 import React from "react";
 import BaseGraph from "./components/BaseGraph";
-import { paste } from "./helpers/clipboardHelpers";
+import { paste, copy } from "./helpers/clipboardHelpers";
 import GraphErrorBoundary from "./components/GraphErrorBoundary";
 import useGraphData from "./hooks/useGraphData";
 
 const App = () => {
   const [graphData, setGraphData] = useGraphData();
+  const copyLink = async () => {
+    await copy(window.location.href);
+  };
   const pasteGraph = async () => {
     try {
       const rawData = await paste();
@@ -32,6 +35,9 @@ const App = () => {
         <BaseGraph data={graphData} />
       </GraphErrorBoundary>
       <aside className="corner-form">
+        <button type="button" onClick={copyLink}>
+          Copy Link
+        </button>
         <button type="button" onClick={pasteGraph}>
           Paste Data
         </button>
